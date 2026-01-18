@@ -14,6 +14,7 @@ interface WayfinderOptions {
     formVariants?: boolean;
     path?: string;
     command?: string;
+    generate?: boolean;
 }
 
 let context: PluginContext;
@@ -25,6 +26,7 @@ export const wayfinder = ({
     formVariants = false,
     path,
     command = "php artisan wayfinder:generate",
+    generate = true,
 }: WayfinderOptions = {}): Plugin => {
     patterns = patterns.map((pattern) => pattern.replace("\\", "/"));
 
@@ -53,6 +55,11 @@ export const wayfinder = ({
     }
 
     const runCommand = async () => {
+        if (!generate) {
+            context.info("Wayfinder auto-generation is disabled");
+            return;
+        }
+
         try {
             await execAsync(`${command} ${args.join(" ")}`);
         } catch (error) {
